@@ -1,14 +1,13 @@
 from fastapi import FastAPI
 
-a = 1000
-b = 25
-c = a/b
-resp = """  The fist number is : {}
-            The Second Number is : {} 
-            Finaly the devision is : {}""".format(a, b, c)
-
 app  = FastAPI()
 
-@app.get("/")
-async def root():
-    return resp
+@app.get("/{a}/{b}")
+async def root(
+    a = 0,
+    b = 1 
+):
+    if float(b) == 0 :
+        return """The Second number cannot be 0, Please give another numbers"""
+    c = float(a)/float(b)
+    return "Num 1 =", float(a),"Num 2 =", float(b),"Reseult =", c
