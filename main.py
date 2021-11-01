@@ -3,11 +3,9 @@ from fastapi import FastAPI, HTTPException
 app  = FastAPI()
 
 @app.get("/{a}/{b}")
-async def root(
-    a,b
-):
-    if float(b) == 0 :
+async def root(a: float, b: float):
+    if b == 0 :
         raise HTTPException(status_code=417, detail="The second number cannot be 0 ")
 
-    c = float(a)/float(b)
-    return {"Num1" : float(a), "Num2": float(b), "Reseult": c}
+    c = a/b
+    return {"Num1" : a, "Num2": b, "Reseult": c}
