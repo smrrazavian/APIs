@@ -11,8 +11,10 @@ sql ='''CREATE TABLE NUMBER(
     a INT NOT NULL,
     b INT NOT NULL,
     Result FLOAT
-)'''
+    )'''
 
 cursor.execute(sql)
 print("Table created successfully........")
+
+
 conn.commit()
