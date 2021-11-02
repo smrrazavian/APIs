@@ -1,20 +1,9 @@
-import sqlite3
-from sqlite3 import Error
+from sqlalchemy import create_engine
+from sqlalchemy.ext.declarative import declarative_base
+from sqlalchemy.orm import sessionmaker
 
-conn = sqlite3.connect(r'C:\Users\ASUS\Desktop\APIs\db\sample.db')
-cursor = conn.cursor()
+db_path = r'sqlite:///C:\Users\ASUS\Desktop\APIs\db\sample.db'
+engine = create_engine(db_path, connect_args={"check_same_thread": False})
+SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 
-cursor.execute("DROP TABLE IF EXISTS NUMBER")
-
-sql ='''CREATE TABLE NUMBER(
-    ID INT PRIMARY KEY,
-    a INT NOT NULL,
-    b INT NOT NULL,
-    Result FLOAT
-    )'''
-
-cursor.execute(sql)
-print("Table created successfully........")
-
-
-conn.commit()
+Base = declarative_base()
