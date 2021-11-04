@@ -8,7 +8,7 @@ models.Base.metadata.create_all(bind=engine)
 
 app  = FastAPI()
 
-@app.get("/division/{a}/{b}")
+@app.get("/adding/{a}/{b}")
 async def adding_to_db(a: float, b: float):
     if b == 0 :
         raise HTTPException(status_code=417, detail="The second number cannot be 0 ")
@@ -16,4 +16,3 @@ async def adding_to_db(a: float, b: float):
     result = a/b
     
     return {"Num1" : a, "Num2": b, "Reseult": result}
-
