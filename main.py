@@ -14,7 +14,7 @@ def get_db():
         yield db
     finally :
         db.close()
-
+# END POINT NO 1
 @app.get("/adding/{a}/{b}")
 async def adding_to_db(a: float, b: float, db: session = Depends(get_db)):
 
@@ -32,3 +32,11 @@ async def adding_to_db(a: float, b: float, db: session = Depends(get_db)):
     db.commit()
     
     return {"Num1" : a, "Num2": b, "Reseult": c}
+# END POINT NO 1
+@app.get("/updating/{id}/{a}/{b}")
+async def updating_number(id : int, a: float, b: float, db: session = Depends(get_db)):
+
+    numbers = Numbers()
+    numbers.num1 = a
+    numbers.num2 = b
+    numbers.id = id
