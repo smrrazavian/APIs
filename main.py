@@ -1,9 +1,10 @@
 from fastapi import FastAPI, HTTPException, Depends
-import models
+from starlette.responses import JSONResponse
 from Sqlite_query import SessionLocal, engine
-from sqlalchemy.orm import session
+from sqlalchemy.orm import session, Session
+import models
 from models import Numbers
-
+import crud
 models.Base.metadata.create_all(bind=engine)
 
 app  = FastAPI()
@@ -31,11 +32,10 @@ async def adding_to_db(a: float, b: float, db: session = Depends(get_db)):
 
     db.add(numbers)
     db.commit()
-    session.refresh(numbers)
     
-    return {"Num1" : a, "Num2": b, "Reseult": c}
+    return JSONResponse({"Num1" : a, "Num2": b, "Reseult": c}, status_code=200)
 
-# END POINT NO 2
+# END POINT NO 2 #TODO Fix update End-point
 @app.patch("/update/{id}/{a}/{b}")
 async def updating_number(id : int, a: float, b: float, db: session = Depends(get_db)):
 
@@ -53,7 +53,19 @@ async def updating_number(id : int, a: float, b: float, db: session = Depends(ge
     for key, value in hero_data.items():
         setattr(db, key, value)
 
-    db.add(numbers)
     db.commit()
     db.refresh(numbers)
     return numbers
+
+# END POINT NO 3 : READING ID
+@app.get("/show/")
+def read_numbers(skip: int = 0, limit: int = 100, db: Session = Depends(get_db)):
+    number = crud.get_numbers(db, skip=skip, limit=limit)
+    return number
+
+@app.get("/show/{id}")
+def read_id(id: int, db: Session = Depends(get_db)):
+    db_number = crud.get_number(db, id=id)
+    if db_number is None:
+        raise HTTPException(status_code=404, detail="number not found")
+    return db_number
