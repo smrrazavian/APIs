@@ -69,3 +69,14 @@ def read_id(id: int, db: Session = Depends(get_db)):
     if db_number is None:
         raise HTTPException(status_code=404, detail="number not found")
     return db_number
+
+@app.delete("/delete/{id}", status_code=204)
+def remove(id, db: Session = Depends(get_db)):
+    effected_rows = db.query(models.Numbers).filter(models.Numbers.id == id).delete()
+    if effected_rows == 0:
+        raise HTTPException(status_code= 404)
+    else:
+        db.commit()
+    return {
+        "detail": effected_rows
+    }
