@@ -1,5 +1,5 @@
 # APIs
-API tutorial with python and FAttAPI 
+API tutorial with python and FastAPI 
 In this miin-project i built some end-points for connecting to SQLite 
 
 End-point NO1 : #add
