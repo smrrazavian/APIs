@@ -7,21 +7,27 @@ from models import Numbers
 import crud
 models.Base.metadata.create_all(bind=engine)
 
-app  = FastAPI()
+app = FastAPI()
+
 
 def get_db():
-    try : 
+    try:
         db = SessionLocal()
         yield db
-    finally :
+    finally:
         db.close()
 
 # END POINT NO 1
-@app.get("/add/{a}/{b}")
+# TODO Read Dependency-Injection
+# TODO get input from model
+
+
+@app.post("/add/{a}/{b}")
 async def adding_to_db(a: float, b: float, db: session = Depends(get_db)):
 
-    if b == 0 :
-        raise HTTPException(status_code=417, detail="The second number cannot be 0 ")
+    if b == 0:
+        raise HTTPException(
+            status_code=417, detail="The second number cannot be 0 ")
 
     c = a/b
 
@@ -32,20 +38,25 @@ async def adding_to_db(a: float, b: float, db: session = Depends(get_db)):
 
     db.add(numbers)
     db.commit()
-    
-    return JSONResponse({"Num1" : a, "Num2": b, "Reseult": c}, status_code=200)
+    # TODO Transaction In DB & Commit Rollback
 
-# END POINT NO 2 #TODO Fix update End-point
+    return JSONResponse({"Num1": a, "Num2": b, "Reseult": c}, status_code=200)
+    # TODO Array in Json
+
+# END POINT NO 2
+
+
 @app.patch("/update/{id}/{a}/{b}")
-async def updating_number(id : int, a: float, b: float, db: session = Depends(get_db)):
+async def updating_number(id: int, a: float, b: float, db: session = Depends(get_db)):
 
     numbers = Numbers()
     numbers.num1 = a
     numbers.num2 = b
     numbers.id = id
 
-    db = session.put(Numbers, id)
-    if not db:
+    q = db.put(Numbers, id)
+
+    if not q:
         raise HTTPException(status_code=404, detail="Hero not found")
 
     hero_data = numbers.dict(exclude_unset=True)
@@ -58,10 +69,13 @@ async def updating_number(id : int, a: float, b: float, db: session = Depends(ge
     return numbers
 
 # END POINT NO 3 : READING ID
+
+
 @app.get("/show/")
 def read_numbers(skip: int = 0, limit: int = 100, db: Session = Depends(get_db)):
     number = crud.get_numbers(db, skip=skip, limit=limit)
     return number
+
 
 @app.get("/show/{id}")
 def read_id(id: int, db: Session = Depends(get_db)):
@@ -69,14 +83,3 @@ def read_id(id: int, db: Session = Depends(get_db)):
     if db_number is None:
         raise HTTPException(status_code=404, detail="number not found")
     return db_number
-
-@app.delete("/delete/{id}", status_code=204)
-def remove(id, db: Session = Depends(get_db)):
-    effected_rows = db.query(models.Numbers).filter(models.Numbers.id == id).delete()
-    if effected_rows == 0:
-        raise HTTPException(status_code= 404)
-    else:
-        db.commit()
-    return {
-        "detail": effected_rows
-    }
