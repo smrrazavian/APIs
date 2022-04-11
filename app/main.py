@@ -37,7 +37,6 @@ class NumberIn(BaseModel):
     """Model for storing numbers."""
     divided: int
     factor: int
-    result: int
 
 
 class Number(BaseModel):
@@ -81,6 +80,7 @@ async def division(number: NumberIn):
     
     divided = number.divided
     factor = number.factor
+    # result = number.result
     if factor == 0:
         raise HTTPException(status_code=417, detail="Factor cannot be 0 ")
     result = divided / factor
